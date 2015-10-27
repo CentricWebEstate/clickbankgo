@@ -1,6 +1,8 @@
 package clickbank
 
-import "github.com/spacemonkeygo/openssl"
+import (
+	"github.com/spacemonkeygo/openssl"
+)
 
 type CryptStruct struct {
 	key    []byte

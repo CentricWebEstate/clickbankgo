@@ -1,9 +1,14 @@
 package clickbank
 
-import "encoding/base64"
-import "encoding/json"
-import "io"
-import "crypto/sha1"
+import (
+	"crypto/sha1"
+	"encoding/base64"
+	"encoding/json"
+	"errors"
+	"io"
+)
+
+var ErrCouldNotDecode = errors.New("Could not Base64 decode string")
 
 func DecryptRequestBody(body io.ReadCloser, key []byte) ([]byte, error) {
 	var json_response EncryptedNotification
@@ -16,8 +21,20 @@ func DecryptRequestBody(body io.ReadCloser, key []byte) ([]byte, error) {
 
 	// Extract the IV needed for cipher
 	iv, err := base64.StdEncoding.DecodeString(json_response.IV)
+	if err != nil {
+		return nil, ErrCouldNotDecode
+	}
+
 	encrypted_response, err = base64.StdEncoding.DecodeString(json_response.Notification)
-	crypt, _ := NewCryptStruct(key, iv)
+	if err != nil {
+		return nil, ErrCouldNotDecode
+	}
+
+	crypt, err := NewCryptStruct(key, iv)
+	if err != nil {
+		return nil, err
+	}
+
 	decrypted_response, err := crypt.Decrypt(encrypted_response)
 	if err != nil {
 		return nil, err
