@@ -1,18 +1,19 @@
 package clickbank
 
 import (
-	"github.com/spacemonkeygo/openssl"
+	"crypto/aes"
+	"crypto/cipher"
 )
 
 type CryptStruct struct {
 	key    []byte
 	iv     []byte
-	cipher *openssl.Cipher
+	cipher cipher.Block
 }
 
 /* Create a new CrypteStruct */
 func NewCryptStruct(key []byte, iv []byte) (*CryptStruct, error) {
-	cipher, err := openssl.GetCipherByName("aes-256-cbc")
+	cipher, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
@@ -22,21 +23,8 @@ func NewCryptStruct(key []byte, iv []byte) (*CryptStruct, error) {
 
 /* Decrypt Something */
 func (c *CryptStruct) Decrypt(input []byte) ([]byte, error) {
-	ctx, err := openssl.NewDecryptionCipherCtx(c.cipher, nil, c.key, c.iv)
-	if err != nil {
-		return nil, err
-	}
-
-	cipherbytes, err := ctx.DecryptUpdate(input)
-	if err != nil {
-		return nil, err
-	}
-
-	finalbytes, err := ctx.DecryptFinal()
-	if err != nil {
-		return nil, err
-	}
-
-	cipherbytes = append(cipherbytes, finalbytes...)
-	return cipherbytes, nil
+	ctx := cipher.NewCBCDecrypter(c.cipher, c.iv)
+	text := input[c.cipher.BlockSize():]
+	ctx.CryptBlocks(text, text)
+	return input, nil
 }

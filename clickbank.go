@@ -3,6 +3,7 @@ package clickbank
 import (
 	"crypto/sha1"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"io"
@@ -10,7 +11,7 @@ import (
 
 var ErrCouldNotDecode = errors.New("Could not Base64 decode string")
 
-func DecryptRequestBody(body io.ReadCloser, key []byte) ([]byte, error) {
+func DecryptRequestBody(body io.Reader, key []byte) ([]byte, error) {
 	var json_response EncryptedNotification
 	var encrypted_response []byte
 	json_decoder := json.NewDecoder(body)
@@ -54,6 +55,8 @@ func DecodeResponse(encoded_response []byte) (ClickbankNotification, error) {
 }
 
 func ObfuscateKey(key []byte) []byte {
-	hash := sha1.New()
-	return hash.Sum(key)[:32]
+	sha := sha1.Sum(key)
+	hexSha := make([]byte, hex.EncodedLen(len(sha)))
+	hex.Encode(hexSha, sha[:])
+	return hexSha[:32]
 }
