@@ -1,3 +1,3 @@
-module github.com/CentricWebEstate/clickbankgo
+module github.com/centricwebestate/clickbankgo
 
 go 1.20

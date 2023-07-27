@@ -10,32 +10,8 @@ Start off by grabbing the library and putting it into your `$GOPATH`.
 $ go get github.com/centricwebestate/clickbankgo
 ```
 
-Here's an example go webserver where we parse the incoming notification and print the Go representation of the object back.
-
-```Go
-// webserver.go
-package main
-
-import "fmt"
-import "net/http"
-import "github.com/centricwebestate/clickbankgo"
-
-var cb_key []byte = []byte("SOMEKEY")
-var key []byte = clickbank.ObfuscateKey(cb_key)
-
-func handler(w http.ResponseWriter, r *http.Request) {
-		decrypted_response, _ := clickbank.DecryptRequestBody(r.Body, key)
-		final_object, _ := clickbank.DecodeResponse(decrypted_response)
-		fmt.Fprintf(w, "%#v", final_object)
-
-	}
-}
-
-func main() {
-	http.HandleFunc("/", handler)
-	http.ListenAndServe(":8080", nil)
-}
-```
+## Example webserver
+An example web server is located under the cmd/ folder in the example.go file.
 
 Now in your terminal run
 
