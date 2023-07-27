@@ -36,7 +36,7 @@ func DecryptRequestBody(body io.Reader, key []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	decrypted_response, err := crypt.Decrypt(encrypted_response)
+	decrypted_response, err := crypt.DecryptPKCS5(encrypted_response)
 	if err != nil {
 		return nil, err
 	}
