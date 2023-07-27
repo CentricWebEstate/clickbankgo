@@ -1,4 +1,4 @@
-#ClickbankGo
+# ClickbankGo
 A Golang library to help parse the incomming json notification from the Clickbank Instant Payment Notification service.
 
 Save yourself from having to loop through the elements or create the huge struct represenation of the notification.
