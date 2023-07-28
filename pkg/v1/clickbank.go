@@ -9,7 +9,7 @@ import (
 	"io"
 )
 
-var ErrCouldNotDecode = errors.New("Could not Base64 decode string")
+var ErrCouldNotDecode = errors.New("could not Base64 decode string")
 
 func DecryptRequestBody(body io.Reader, key []byte) ([]byte, error) {
 	var json_response EncryptedNotification
@@ -36,7 +36,7 @@ func DecryptRequestBody(body io.Reader, key []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	decrypted_response, err := crypt.Decrypt(encrypted_response)
+	decrypted_response, err := crypt.DecryptPKCS5(encrypted_response)
 	if err != nil {
 		return nil, err
 	}
@@ -44,11 +44,11 @@ func DecryptRequestBody(body io.Reader, key []byte) ([]byte, error) {
 	return decrypted_response, nil
 }
 
-func DecodeResponse(encoded_response []byte) (ClickbankNotification, error) {
-	var final_object ClickbankNotification
-	err := json.Unmarshal(encoded_response, &final_object)
+func DecodeResponse(encoded_response []byte) (*ClickbankNotification, error) {
+	var final_object *ClickbankNotification
+	err := json.Unmarshal(encoded_response, final_object)
 	if err != nil {
-		return ClickbankNotification{}, err
+		return nil, err
 	}
 
 	return final_object, nil
