@@ -45,7 +45,7 @@ func DecryptRequestBody(body io.Reader, key []byte) ([]byte, error) {
 }
 
 func DecodeResponse(encoded_response []byte) (*ClickbankNotification, error) {
-	var final_object *ClickbankNotification
+	final_object := &ClickbankNotification{}
 	err := json.Unmarshal(encoded_response, final_object)
 	if err != nil {
 		return nil, err

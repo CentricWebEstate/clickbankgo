@@ -4,6 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"errors"
+	"strings"
 )
 
 type CryptStruct struct {
@@ -34,12 +35,11 @@ func (c *CryptStruct) Decrypt(input []byte) ([]byte, error) {
 		return nil, ErrInvalidInput
 	}
 
-	text := input[c.cipher.BlockSize():]
-	ctx.CryptBlocks(text, text)
+	ctx.CryptBlocks(input, input)
 	return input, nil
 }
 
-func (c *CryptStruct) DecryptPKCS5(input []byte) ([]byte, error) { 
+func (c *CryptStruct) DecryptPKCS5(input []byte) ([]byte, error) {
 	r, err := c.Decrypt(input)
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (c *CryptStruct) DecryptPKCS5(input []byte) ([]byte, error) {
 	return PKCS5Unpad(r)
 }
 
-func PKCS5Unpad (input []byte) ([]byte, error) {
+func PKCS5Unpad(input []byte) ([]byte, error) {
 	// Expect the last byte of the string to have the length of padding
 	length := len(input)
 	padding_size := int(input[length-1])
@@ -58,4 +58,13 @@ func PKCS5Unpad (input []byte) ([]byte, error) {
 	}
 
 	return input[:length-padding_size], nil
+}
+
+func StripCtrlChars(input []byte) string {
+	return strings.TrimFunc(string(input), func(r rune) bool {
+		if r <= 32 && r == 127 {
+			return true
+		}
+		return false
+	})
 }
